@@ -28,8 +28,10 @@ class UMapCheckCommandlet : public UCommandlet
 	/** Execution when this commandlet is run. Other methods are publically exposed for scripting purposes. */
 	virtual int32 Main(const FString& Params) override;
 
-	/** Runs map check for an asset. Returns validation result and data validation context. */
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Runs map check for an asset. Returns validation result and data validation context.
+	 * NOTE: FDataValidationContext is not a struct despite the 'F' prefix, and is not exposed to python as of UE5.2
+	 */
 	EDataValidationResult RunMapCheck(const FAssetData& WorldAsset, FDataValidationContext& OutValidationContext) const;
 
 	/** Runs map check for an asset. Returns validation result and text arrays for errors and warnings. */

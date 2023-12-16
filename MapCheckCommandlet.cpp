@@ -10,9 +10,11 @@
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Editor/EditorEngine.h"
 #include "GenericPlatform/GenericPlatformOutputDevices.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Subsystems/AssetEditorSubsystem.h"
 #include "JsonObjectConverter.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Misc/FeedbackContext.h"
+#include "Misc/FileHelper.h"
+#include "Subsystems/AssetEditorSubsystem.h"
 
 #if WITH_EDITOR
 int32 UMapCheckCommandlet::Main(const FString& Params)
@@ -40,7 +42,7 @@ int32 UMapCheckCommandlet::Main(const FString& Params)
 		FWorldAssetMapCheck WorldCheck = RunMapCheck(Asset);
 		if (bReportSuccess || WorldCheck.HasIssues())
 		{
-			MapCheckCollection.WorldAssets.Add(WorldCheck);
+			MapCheckCollection.WorldAssets.Add(MoveTemp(WorldCheck));
 		}
 	}
 
@@ -49,7 +51,8 @@ int32 UMapCheckCommandlet::Main(const FString& Params)
 		FString JsonString;
 		if (FJsonObjectConverter::UStructToJsonObjectString(MapCheckCollection, JsonString, 0, 0, 0, nullptr, bPrettyJSON))
 		{
-			FFileHelper::SaveStringToFile(JsonString, **(ParamMap.Find("jsonoutput")));
+			FString Path = FPaths::ProjectSavedDir() / *ParamMap.Find("jsonoutput");
+			FFileHelper::SaveStringToFile(JsonString, *Path);
 		}
 	}
 
@@ -61,7 +64,7 @@ EDataValidationResult UMapCheckCommandlet::RunMapCheck(const FAssetData& WorldAs
 	if (!WorldAsset.IsValid())
 	{
 		ValidationContext.AddError(FText::Format(INVTEXT("Could not access data asset {0}"), FText::FromString(WorldAsset.GetFullName())));
-		return;
+		return EDataValidationResult::Invalid;
 	}
 
 	EDataValidationResult Result = EDataValidationResult::Valid;
@@ -160,6 +163,8 @@ EDataValidationResult UMapCheckCommandlet::RunMapCheck(const FAssetData& WorldAs
 FWorldAssetMapCheck UMapCheckCommandlet::RunMapCheck(const FAssetData& WorldAsset)
 {
 	FWorldAssetMapCheck WorldCheck;
+	WorldCheck.Name = WorldAsset.AssetName.ToString();
+	WorldCheck.AssetPath = GetAssetPath(WorldAsset);
 	WorldCheck.Validity = RunMapCheck(WorldAsset, WorldCheck.Errors, WorldCheck.Warnings);
 	return WorldCheck;
 }
