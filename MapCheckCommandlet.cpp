@@ -98,6 +98,7 @@ EDataValidationResult UMapCheckCommandlet::RunMapCheck(const FAssetData& WorldAs
 				for (int32 Index = 0; Index < Errors.Num(); ++Index)
 				{
 					ValidationContext.AddError(FText::FromString(Errors[Index]));
+					Result = CombineDataValidationResults(Result, EDataValidationResult::Invalid);
 				}
 
 				TArray<FString> Warnings;
@@ -122,16 +123,19 @@ EDataValidationResult UMapCheckCommandlet::RunMapCheck(const FAssetData& WorldAs
 			else
 			{
 				ValidationContext.AddError(INVTEXT("Could not access AssetEditorSubsystem to perform MapCheck"));
+				Result = CombineDataValidationResults(Result, EDataValidationResult::Invalid);
 			}
 		}
 		else
 		{
 			ValidationContext.AddError(INVTEXT("Could not access engine to perform MapCheck"));
+			Result = CombineDataValidationResults(Result, EDataValidationResult::Invalid);
 		}
 	}
 	else
 	{
 		ValidationContext.AddError(FText::Format(INVTEXT("Could not access data asset {0}"), FText::FromString(WorldAsset.GetFullName())));
+		Result = CombineDataValidationResults(Result, EDataValidationResult::Invalid);
 	}
 
 	return Result;

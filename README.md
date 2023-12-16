@@ -7,8 +7,12 @@ Map Check is a error checking tool for your levels while developing in the Unrea
 You can find details about how this works on
 (Unreal's documentation)[https://docs.unrealengine.com/latest/en-US/map-check-errors-in-unreal-engine/].
 
-The normal way to run Map Check is to navigate to Tools -> Run Map Check while you have
-a level open in the editor. Among some other generic things, this iterates over all
+The normal way to run Map Check is to navigate to Build -> Map Check while you have
+a level open in the editor.
+
+![Map Check in Editor](Images/MapCheckInEditor.jpg)
+
+Among some other generic things, this iterates over all
 the actors you have in a scene and calls the `CheckForErrors` method, which traditionally
 populates information into a MapCheck `FMessageLog`. 
 
