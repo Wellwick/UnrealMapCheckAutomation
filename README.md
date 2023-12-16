@@ -5,7 +5,7 @@ Map Check automation tooling for Unreal Engine development.
 
 Map Check is a error checking tool for your levels while developing in the Unreal Editor.
 You can find details about how this works on
-(Unreal's documentation)[https://docs.unrealengine.com/latest/en-US/map-check-errors-in-unreal-engine/].
+[Unreal's documentation](https://docs.unrealengine.com/latest/en-US/map-check-errors-in-unreal-engine/).
 
 The normal way to run Map Check is to navigate to Build -> Map Check while you have
 a level open in the editor.
@@ -35,5 +35,36 @@ is often excluded from version control considerations).
 
 ## Dependencies
 
-A MapCheckAutomation.Build.cs file is included in this repository in case you want to use
-this as a module by itself.
+`MapCheckAutomation.Build.cs`/`.cpp`/`.h` files are included in this repository in case you
+want to use this as a module by itself.
+
+Within your `.uproject` you can add the module like:
+
+```
+"Modules": [
+	...
+	{
+		"Name": "MapCheckAutomation",
+		"Type": "Editor",
+		"LoadingPhase": "Default"
+	}
+],
+```
+
+## Implementing MapChecks
+
+See the [BadActor](MapCheckExample/BadActor.cpp) example for how you can implement MapCheck
+via [CheckForErrors](https://docs.unrealengine.com/latest/en-US/API/Runtime/Engine/GameFramework/AActor/CheckForErrors/).
+
+The below image shows some actors that are being checked by the requirements in `BadActor.cpp`,
+with corresponding colour highlighting for if they are producing errors (Red) or warnings
+(Yellow).
+
+![Example Bad Actors](Images/MapCheckedActors.jpg)
+
+By including a `FUObjectToken`s in your Map Checking logic, you make it much easier
+to track down your issues in editor, since clicking on these tokens will refocus your editor
+to the appropriate object.
+
+![Map Check Report](Images/MapCheckReport.jpg)
+
